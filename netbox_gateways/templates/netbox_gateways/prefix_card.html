@@ -1,0 +1,23 @@
+
+{% if gateways_obj %}
+<div class="card">
+    <h5 class="card-header">
+        Routing
+    </h5>
+    <div class="card-body">
+        <table class="table table-hover attr-table">
+            
+            <tr><td>Gateway</td><td>{{ gateways_obj.gateway_ip |linkify }}</td></tr>
+            <tr><td>Netmask</td><td>{{ gateways_obj.gateway_ip.address.netmask }}</td></tr>
+            <tr><td>Gateway Device</td>
+                <td>
+                {% if gateways_obj.gateway_ip.assigned_object.parent_object %}
+                {{ gateways_obj.gateway_ip.assigned_object.parent_object|linkify }} / 
+                {% endif %}
+                {{ gateways_obj.gateway_ip.assigned_object|linkify }}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endif %}

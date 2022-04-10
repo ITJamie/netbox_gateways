@@ -1,0 +1,4 @@
+
+.DS_Store
+netbox_gateways.egg-info/*
+__pycache__

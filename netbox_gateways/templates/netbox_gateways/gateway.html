@@ -1,0 +1,42 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Gateway List</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">VRF</th>
+              <td>{{ object.vrf|linkify }}</td>
+            </tr>
+            <th scope="row">Prefix</th>
+            <td>{{ object.prefix|linkify }}</td>
+            </tr>
+            </tr>
+            <th scope="row">Gateway</th>
+            <td>{{ object.gateway_ip|linkify }}</td>
+            </tr>
+            </tr>
+            <th scope="row">Gateway Device</th>
+            <td>
+              {% if object.gateway_ip.assigned_object.parent_object %}
+              {{ object.gateway_ip.assigned_object.parent_object|linkify }} / 
+              {% endif %}
+              {{ object.gateway_ip.assigned_object|linkify }}
+            </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+
+{% endblock content %}

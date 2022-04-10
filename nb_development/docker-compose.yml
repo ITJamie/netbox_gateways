@@ -1,0 +1,138 @@
+
+
+x-docker-data: &netbox-docker-info
+  image: netboxcommunity/netbox:snapshot-1.6.1
+  restart: always
+  depends_on:
+    - postgresql
+    - redis
+    - redis-cache
+    - netbox-worker
+  user: "root:unit"
+  volumes:
+    - ./preentry.sh:/opt/netbox/preentry.sh
+    - ./launch-netbox-runsever.sh:/opt/netbox/launch-netbox-runsever.sh
+    - ./netbox_conf_extra.py:/etc/netbox/config/extra.py
+    - ../:/opt/plugin_source
+  environment:
+    - ENFORCE_GLOBAL_UNIQUE=True
+    - NETBOX_DELETE_LEGACY_DATA=True
+    - CORS_ORIGIN_ALLOW_ALL=True
+    - DB_HOST=postgresql
+    - DB_NAME=netbox_dev
+    - DB_PASSWORD=nb_gateways
+    - DB_USER=netbox_dev_user
+    - EMAIL_FROM=netbox@bar.com
+    - EMAIL_PASSWORD=
+    - EMAIL_PORT=25
+    - EMAIL_SERVER=localhost
+    - EMAIL_SSL_CERTFILE=
+    - EMAIL_SSL_KEYFILE=
+    - EMAIL_TIMEOUT=5
+    - EMAIL_USERNAME=netbox
+    # EMAIL_USE_SSL and EMAIL_USE_TLS are mutually exclusive, i.e. they can't both be `true`!
+    - EMAIL_USE_SSL=false
+    - EMAIL_USE_TLS=false
+    - HOUSEKEEPING_INTERVAL=86400
+    - MAX_PAGE_SIZE=1000
+    - MEDIA_ROOT=/opt/netbox/netbox/media
+    - METRICS_ENABLED=false
+    - NAPALM_PASSWORD=
+    - NAPALM_TIMEOUT=10
+    - NAPALM_USERNAME=
+    - REDIS_CACHE_DATABASE=1
+    - REDIS_CACHE_HOST=redis-cache
+    - REDIS_CACHE_INSECURE_SKIP_TLS_VERIFY=false
+    - REDIS_CACHE_PASSWORD=redis_cache
+    - REDIS_CACHE_SSL=false
+    - REDIS_DATABASE=0
+    - REDIS_HOST=redis
+    - REDIS_INSECURE_SKIP_TLS_VERIFY=false
+    - REDIS_PASSWORD=redis_main
+    - REDIS_SSL=false
+    - RELEASE_CHECK_URL=https://api.github.com/repos/netbox-community/netbox/releases
+    - SECRET_KEY=ReactorFuryBiopsy59PinnaclePremisesPonytail44
+    - SKIP_STARTUP_SCRIPTS=false
+    - SKIP_SUPERUSER=false
+    - SUPERUSER_API_TOKEN=0123456789abcdef0123456789abcdef01234567
+    - SUPERUSER_EMAIL=admin@admin.net
+    - SUPERUSER_PASSWORD=admin
+    - SUPERUSER_NAME=admin
+    - WEBHOOKS_ENABLED=true
+    - ALLOWED_HOSTS=*
+    - DEVELOPER=True
+    - DEBUG=True
+
+
+version: '2'
+services:
+    # pg_dump -U netbox_dev_user netbox_dev > dump.sql 
+    postgresql:
+      image: postgres:14
+      restart: always
+      environment:
+        POSTGRES_PASSWORD: nb_gateways
+        POSTGRES_USER: netbox_dev_user
+        POSTGRES_DB: netbox_dev
+      volumes:
+          - pg_data:/var/lib/postgresql/data
+          - './import_db_default/netbox_dev.sql:/docker-entrypoint-initdb.d/netbox_dev.sql' 
+      ports:
+          - '5432:5432'
+    redis:
+        image: redis:6-alpine
+        restart: on-failure
+        command:
+            - sh
+            - -c # this is to evaluate the $REDIS_PASSWORD from the env
+            - redis-server --appendonly yes --requirepass $$REDIS_PASSWORD ## $$ because of docker-compose
+        environment:
+            - REDIS_PASSWORD=redis_main
+        volumes:
+            - redis_data
+    redis-cache:
+        image: redis:6-alpine
+        restart: on-failure
+        environment:
+            - REDIS_PASSWORD=redis_cache
+        command:
+            - sh
+            - -c # this is to evaluate the $REDIS_PASSWORD from the env
+            - redis-server --requirepass $$REDIS_PASSWORD ## $$ because of docker-compose
+        volumes:
+          - redis_cache_data
+
+    netbox: 
+        <<: *netbox-docker-info
+        ports:
+            - 127.0.0.1:8080:8080
+        command:
+            - /opt/netbox/preentry.sh
+            - /opt/netbox/docker-entrypoint.sh
+            # - /opt/netbox/launch-netbox.sh
+            - /opt/netbox/launch-netbox-runsever.sh
+
+    netbox-worker:
+        <<: *netbox-docker-info
+        depends_on:
+            - redis
+            - postgresql
+        command:
+            - /opt/netbox/preentry.sh
+            - /opt/netbox/venv/bin/python
+            - /opt/netbox/netbox/manage.py
+            - rqworker
+
+    netbox-housekeeping:
+        <<: *netbox-docker-info
+        depends_on:
+            - redis
+            - postgresql
+        command:
+            - /opt/netbox/preentry.sh
+            - /opt/netbox/housekeeping.sh
+
+volumes:
+  pg_data:
+  redis_data:
+  redis_cache_data:
