@@ -30,7 +30,10 @@ class IPGatewayTemplate(PluginTemplateExtension):
             prefix = gateways_obj.prefix
 
         if not gateways_obj:
-            gateways_obj = Gateway.objects.get(prefix=prefix)
+            try:
+                gateways_obj = Gateway.objects.get(prefix=prefix)
+            except: 
+                gateways_obj = None
 
         return self.render(
             "netbox_gateways/ip_card.html",
