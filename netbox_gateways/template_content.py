@@ -32,7 +32,7 @@ class IPGatewayTemplate(PluginTemplateExtension):
         if not gateways_obj:
             try:
                 gateways_obj = Gateway.objects.get(prefix=prefix)
-            except: 
+            except Gateway.DoesNotExist:
                 gateways_obj = None
 
         return self.render(
