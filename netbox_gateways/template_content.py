@@ -23,7 +23,7 @@ class IPGatewayTemplate(PluginTemplateExtension):
                 prefix__net_contains_or_equals=str(obj.address.ip),
                 status="active",  # Only search for "active" prefixes
             ).prefetch_related("site", "role")
-            if len(related_prefixs) > 1:
+            if len(related_prefixs) >= 1:
                 try:
                     prefix = related_prefixs[
                         len(related_prefixs) - 1
