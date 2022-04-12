@@ -23,17 +23,26 @@ class IPGatewayTemplate(PluginTemplateExtension):
                 prefix__net_contains_or_equals=str(obj.address.ip),
                 status="active",  # Only search for "active" prefixes
             ).prefetch_related("site", "role")
-            prefix = related_prefixs[
-                len(related_prefixs) - 1
-            ]  # get last prefix in the recordset above
+            if len(related_prefixs) > 1:
+                try:
+                    prefix = related_prefixs[
+                        len(related_prefixs) - 1
+                    ]  # get last prefix in the recordset above
+                except Prefix.ValueError:
+                    prefix = None
+            else:
+                prefix = None
         else:
             prefix = gateways_obj.prefix
 
-        if not gateways_obj:
-            try:
-                gateways_obj = Gateway.objects.get(prefix=prefix)
-            except Gateway.DoesNotExist:
-                gateways_obj = None
+        if not prefix:
+            gateways_obj = None
+        else:
+            if not gateways_obj:
+                try:
+                    gateways_obj = Gateway.objects.get(prefix=prefix)
+                except Gateway.DoesNotExist:
+                    gateways_obj = None
 
         return self.render(
             "netbox_gateways/ip_card.html",
