@@ -1,6 +1,7 @@
 from extras.plugins import PluginTemplateExtension
 from ipam.models import Prefix
 from .models import Gateway
+from ipaddress import IPv4Address
 
 
 class IPGatewayTemplate(PluginTemplateExtension):
@@ -43,6 +44,15 @@ class IPGatewayTemplate(PluginTemplateExtension):
                     gateways_obj = Gateway.objects.get(prefix=prefix)
                 except Gateway.DoesNotExist:
                     gateways_obj = None
+        wildcard_bits = None
+        if gateways_obj:
+            try:
+                prefix_subnet = str(gateways_obj.gateway_ip.address.netmask)
+                wildcard_bits = str(
+                    IPv4Address(int(IPv4Address(prefix_subnet)) ^ (2**32 - 1))
+                )
+            except:
+                wildcard_bits = None
 
         return self.render(
             "netbox_gateways/ip_card.html",
@@ -50,6 +60,7 @@ class IPGatewayTemplate(PluginTemplateExtension):
                 "meow": "mix",
                 "gateways_obj": gateways_obj,
                 "prefix": prefix,
+                "wildcard_bits": wildcard_bits,
             },
         )
 
@@ -67,12 +78,21 @@ class PrefixGatewayTemplate(PluginTemplateExtension):
             gateways_obj = Gateway.objects.get(prefix=obj)
         except Gateway.DoesNotExist:
             gateways_obj = None
-
+        wildcard_bits = None
+        if gateways_obj:
+            try:
+                prefix_subnet = str(gateways_obj.gateway_ip.address.netmask)
+                wildcard_bits = str(
+                    IPv4Address(int(IPv4Address(prefix_subnet)) ^ (2**32 - 1))
+                )
+            except:
+                wildcard_bits = None
         return self.render(
             "netbox_gateways/prefix_card.html",
             extra_context={
                 "prefix": obj,
                 "gateways_obj": gateways_obj,
+                "wildcard_bits": wildcard_bits,
             },
         )
 

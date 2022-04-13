@@ -6,10 +6,8 @@ COMPOSE_FILE=./nb_development/docker-compose.yml
 VERFILE=./netbox_cisco_support/version.py
 
 
-cbuild:
-	docker-compose -f ${COMPOSE_FILE} \
-		-p ${NAME} build \
-		--build-arg netbox_ver=${NETBOX_VER}
+pull:
+	docker-compose -f ${COMPOSE_FILE} -p ${NAME} pull
 
 debug:
 	@echo "Starting Netbox .. "

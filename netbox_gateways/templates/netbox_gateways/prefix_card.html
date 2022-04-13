@@ -7,8 +7,9 @@
     <div class="card-body">
         <table class="table table-hover attr-table">
             
-            <tr><td>Gateway</td><td>{{ gateways_obj.gateway_ip |linkify }}</td></tr>
+            <tr><td>Gateway IP</td><td>{{ gateways_obj.gateway_ip.address.ip }} <a href="{% url 'ipam:ipaddress' pk=gateways_obj.gateway_ip.pk %}"><i class="mdi mdi-link-variant"></i></a></td></tr>
             <tr><td>Netmask</td><td>{{ gateways_obj.gateway_ip.address.netmask }}</td></tr>
+            <tr><td>Wildcard</td><td>{{ wildcard_bits }}</td></tr>
             <tr><td>Gateway Device</td>
                 <td>
                 {% if gateways_obj.gateway_ip.assigned_object.parent_object %}
