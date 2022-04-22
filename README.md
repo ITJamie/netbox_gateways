@@ -34,4 +34,12 @@ python3 netbox/manage.py migrate
 
 ## Screenshots
 
-Uplaoding soon
+Prefix View
+![Prefix View](/docs/images/prefix_view_gw.png)
+
+Gateways
+![Gateways](docs/images/gateways_table_view.png)
+
+Add New Gateway
+![Add New Gateway](/docs/images/add_new_gw.png)
+
