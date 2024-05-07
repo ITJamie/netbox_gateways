@@ -1,5 +1,4 @@
-from extras.plugins import PluginMenuButton, PluginMenuItem
-from utilities.choices import ButtonColorChoices
+from netbox.plugins import PluginMenuButton, PluginMenuItem
 
 
 gateways_buttons = [
@@ -7,7 +6,6 @@ gateways_buttons = [
         link="plugins:netbox_gateways:gateway_add",
         title="Add",
         icon_class="mdi mdi-plus-thick",
-        color=ButtonColorChoices.GREEN,
         permissions=["netbox_gateways.addedit_gateway"],
     )
 ]

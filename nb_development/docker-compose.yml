@@ -1,13 +1,13 @@
 
 
 x-docker-data: &netbox-docker-info
-  image: netboxcommunity/netbox:snapshot-1.6.1
+  image: netboxcommunity/netbox
   restart: always
   depends_on:
     - postgresql
     - redis
-    - redis-cache
-    - netbox-worker
+    # - redis-cache
+    # - netbox-worker
   user: "root:unit"
   volumes:
     - ./preentry.sh:/opt/netbox/preentry.sh
@@ -15,6 +15,7 @@ x-docker-data: &netbox-docker-info
     - ./netbox_conf_extra.py:/etc/netbox/config/extra.py
     - ../:/opt/plugin_source
   environment:
+    - DB_WAIT_DEBUG=1
     - ENFORCE_GLOBAL_UNIQUE=True
     - NETBOX_DELETE_LEGACY_DATA=True
     - CORS_ORIGIN_ALLOW_ALL=True
@@ -41,9 +42,9 @@ x-docker-data: &netbox-docker-info
     - NAPALM_TIMEOUT=10
     - NAPALM_USERNAME=
     - REDIS_CACHE_DATABASE=1
-    - REDIS_CACHE_HOST=redis-cache
+    - REDIS_CACHE_HOST=redis
     - REDIS_CACHE_INSECURE_SKIP_TLS_VERIFY=false
-    - REDIS_CACHE_PASSWORD=redis_cache
+    - REDIS_CACHE_PASSWORD=redis_main
     - REDIS_CACHE_SSL=false
     - REDIS_DATABASE=0
     - REDIS_HOST=redis
@@ -51,12 +52,12 @@ x-docker-data: &netbox-docker-info
     - REDIS_PASSWORD=redis_main
     - REDIS_SSL=false
     - RELEASE_CHECK_URL=https://api.github.com/repos/netbox-community/netbox/releases
-    - SECRET_KEY=ReactorFuryBiopsy59PinnaclePremisesPonytail44
+    - SECRET_KEY=ReactorFuryBiopsy59PinnaclePremisesPonytail44ReactorFuryBiopsy59PinnaclePremisesPonytail44
     - SKIP_STARTUP_SCRIPTS=false
     - SKIP_SUPERUSER=false
     - SUPERUSER_API_TOKEN=0123456789abcdef0123456789abcdef01234567
     - SUPERUSER_EMAIL=admin@admin.net
-    - SUPERUSER_PASSWORD=admin
+    - SUPERUSER_PASSWORD=admin1234
     - SUPERUSER_NAME=admin
     - WEBHOOKS_ENABLED=true
     - ALLOWED_HOSTS=*
@@ -76,7 +77,7 @@ services:
         POSTGRES_DB: netbox_dev
       volumes:
           - pg_data:/var/lib/postgresql/data
-          - './import_db_default/netbox_dev.sql:/docker-entrypoint-initdb.d/netbox_dev.sql' 
+          # - './import_db_default/netbox_dev.sql:/docker-entrypoint-initdb.d/netbox_dev.sql' 
       ports:
           - '5432:5432'
     redis:
@@ -88,49 +89,52 @@ services:
             - redis-server --appendonly yes --requirepass $$REDIS_PASSWORD ## $$ because of docker-compose
         environment:
             - REDIS_PASSWORD=redis_main
-        volumes:
-            - redis_data
-    redis-cache:
-        image: redis:6-alpine
-        restart: on-failure
-        environment:
-            - REDIS_PASSWORD=redis_cache
-        command:
-            - sh
-            - -c # this is to evaluate the $REDIS_PASSWORD from the env
-            - redis-server --requirepass $$REDIS_PASSWORD ## $$ because of docker-compose
-        volumes:
-          - redis_cache_data
+        ports:
+          - '16379:6379'
+        # volumes:
+        #     - redis_data
+    # redis-cache:
+    #     image: redis:6-alpine
+    #     restart: on-failure
+    #     environment:
+    #         - REDIS_PASSWORD=redis_cache
+    #     command:
+    #         - sh
+    #         - -c # this is to evaluate the $REDIS_PASSWORD from the env
+    #         - redis-server --requirepass $$REDIS_PASSWORD ## $$ because of docker-compose
+    #     volumes:
+    #       - redis_cache_data
+
 
     netbox: 
         <<: *netbox-docker-info
         ports:
-            - 127.0.0.1:8080:8080
+            - 127.0.0.1:8082:8080
         command:
             - /opt/netbox/preentry.sh
             - /opt/netbox/docker-entrypoint.sh
             # - /opt/netbox/launch-netbox.sh
             - /opt/netbox/launch-netbox-runsever.sh
 
-    netbox-worker:
-        <<: *netbox-docker-info
-        depends_on:
-            - redis
-            - postgresql
-        command:
-            - /opt/netbox/preentry.sh
-            - /opt/netbox/venv/bin/python
-            - /opt/netbox/netbox/manage.py
-            - rqworker
+    # netbox-worker:
+    #     <<: *netbox-docker-info
+    #     depends_on:
+    #         - redis
+    #         - postgresql
+    #     command:
+    #         - /opt/netbox/preentry.sh
+    #         - /opt/netbox/venv/bin/python
+    #         - /opt/netbox/netbox/manage.py
+    #         - rqworker
 
-    netbox-housekeeping:
-        <<: *netbox-docker-info
-        depends_on:
-            - redis
-            - postgresql
-        command:
-            - /opt/netbox/preentry.sh
-            - /opt/netbox/housekeeping.sh
+    # netbox-housekeeping:
+    #     <<: *netbox-docker-info
+    #     depends_on:
+    #         - redis
+    #         - postgresql
+    #     command:
+    #         - /opt/netbox/preentry.sh
+    #         - /opt/netbox/housekeeping.sh
 
 volumes:
   pg_data:

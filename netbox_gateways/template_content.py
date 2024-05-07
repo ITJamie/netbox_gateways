@@ -1,4 +1,4 @@
-from extras.plugins import PluginTemplateExtension
+from netbox.plugins import PluginTemplateExtension
 from ipam.models import Prefix
 from .models import Gateway
 from ipaddress import IPv4Address
