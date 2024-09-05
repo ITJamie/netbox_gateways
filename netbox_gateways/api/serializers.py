@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ipam.api.serializers import NestedPrefixSerializer, NestedIPAddressSerializer
+from ipam.api.serializers import PrefixSerializer, IPAddressSerializer
 from netbox.api.serializers import NetBoxModelSerializer, WritableNestedSerializer
 from ..models import Gateway  # , GatewayRule
 
@@ -30,8 +30,8 @@ class GatewaySerializer(NetBoxModelSerializer):
         view_name="plugins-api:netbox_gateways-api:gateway-detail",
     )
 
-    prefix = NestedPrefixSerializer()
-    gateway_ip = NestedIPAddressSerializer()
+    prefix = PrefixSerializer(nested=True)
+    gateway_ip = IPAddressSerializer(nested=True)
 
     class Meta:
         model = Gateway
