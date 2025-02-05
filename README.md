@@ -6,7 +6,8 @@
 
 |      Netbox Version       |   Plugin Version    |
 |---------------------------|-------|
-| NetBox 4.0                | 0.6.0 |
+| Netbox 4.2                | 0.7.0 |
+| NetBox 4.1                | 0.6.0 |
 | NetBox 4.0                | 0.5.0 |
 | NetBox 3.2                | 0.4.2 |
 
