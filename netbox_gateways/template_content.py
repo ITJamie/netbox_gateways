@@ -5,7 +5,7 @@ from ipaddress import IPv4Address
 
 
 class IPGatewayTemplate(PluginTemplateExtension):
-    model = "ipam.ipaddress"
+    models = ["ipam.ipaddress"]
 
     def left_page(self):
         return self.x_page()
@@ -66,7 +66,7 @@ class IPGatewayTemplate(PluginTemplateExtension):
 
 
 class PrefixGatewayTemplate(PluginTemplateExtension):
-    model = "ipam.prefix"
+    models = ["ipam.prefix"]
 
     def left_page(self):
         return self.x_page()
