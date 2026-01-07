@@ -5,7 +5,7 @@ class NetBoxGatewayConfig(PluginConfig):
     name = "netbox_gateways"
     verbose_name = " Netbox Gateway"
     description = "Manage simple prefix default gateways"
-    version = "0.8.0"
+    version = "0.9.0"
     base_url = "nb-gateways"
 
 
