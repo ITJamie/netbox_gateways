@@ -1,5 +1,5 @@
 import strawberry_django
-from netbox.graphql.filters import PrimaryModelFilter
+from netbox.graphql.filters import BaseModelFilter
 
 from netbox_gateways.models import Gateway
 
@@ -9,5 +9,5 @@ __all__ = (
 
 
 @strawberry_django.filter(Gateway, lookups=True)
-class GatewayFilter(PrimaryModelFilter):
+class GatewayFilter(BaseModelFilter):
     pass
