@@ -15,7 +15,7 @@ class GatewayView(generic.ObjectView):
 
 
 class GatewayListView(generic.ObjectListView):
-    queryset = models.Gateway.objects.all()
+    queryset = models.Gateway.objects.all().prefetch_related('tags')
     table = tables.GatewayTable
     filterset = filtersets.GatewayFilterSet
     filterset_form = forms.GatewayFilterForm
