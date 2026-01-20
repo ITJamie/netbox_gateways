@@ -11,5 +11,5 @@ class GatewayTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = Gateway
-        fields = ("pk", "id", "vrf", "prefix", "gateway_ip", "actions")
+        fields = ("pk", "id", "vrf", "prefix", "gateway_ip", "actions", "tags")
         default_columns = ("id", "vrf", "prefix", "gateway_ip")
