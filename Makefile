@@ -45,6 +45,7 @@ migrations:
 	docker-compose -f ${COMPOSE_FILE} -p ${NAME} down
 
 pbuild:
+	$(MAKE) clean
 	python3 -m pip install --upgrade build
 	python3 -m build
 
@@ -72,3 +73,6 @@ endif
 
 test:
 	docker-compose -f ${COMPOSE_FILE} -p ${NAME} exec netbox python manage.py test ${NAME}
+
+clean:
+	rm -rf dist
