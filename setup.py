@@ -6,7 +6,7 @@ README = (Path(__file__).parent / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="netbox-gateways",
-    version="0.9.0",
+    version="0.9.1",
     description="Manage simple prefix default gateways",
     long_description=README,
     long_description_content_type="text/markdown",
